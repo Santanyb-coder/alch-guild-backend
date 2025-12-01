@@ -71,20 +71,21 @@ app.post('/init-player', async (req, res) => {
     );
 
     const inventory = invResult.rows.map(row => ({
-      itemId: row.item_id,
-      code: row.code,
-      name: row.name,
-      level: row.level,
-      rarity: row.rarity,
-      quantity: row.quantity
-    ));
+  itemId: row.item_id,
+  code: row.code,
+  name: row.name,
+  level: row.level,
+  rarity: row.rarity,
+  quantity: row.quantity,
+}));
 
-    res.json({ player, inventory });
-  } catch (err) {
-    console.error('init-player error:', err);
-    res.status(500).json({ error: 'Internal server error' });
-  }
+res.json({ player, inventory });
+} catch (err) {
+  console.error('init-player error:', err);
+  res.status(500).json({ error: 'Internal server error' });
+}
 });
+
 
 
 app.listen(PORT, () => {
