@@ -1,10 +1,31 @@
+const express = require('express');
 const { connect } = require('./db');
 
-async function main() {
-  console.log('DATABASE_URL from env:', process.env.DATABASE_URL);
-  const client = await connect();
-  const res = await client.query('SELECT NOW()');
-  console.log('DB time:', res.rows[0]);
-}
+const app = express();
+const PORT = process.env.PORT || 3000;
 
-main().catch(console.error);
+// чтобы Express умел читать JSON из тела запросов
+app.use(express.json());
+
+app.get('/health', async (req, res) => {
+  try {
+    const client = await connect();
+    const result = await client.query('SELECT NOW() AS now');
+    const now = result.rows[0].now;
+
+    res.json({
+      status: 'ok',
+      dbTime: now,
+    });
+  } catch (err) {
+    console.error('Health check error:', err);
+    res.status(500).json({
+      status: 'error',
+      message: 'DB connection failed',
+    });
+  }
+});
+
+app.listen(PORT, () => {
+  console.log(`Alch Guild backend listening on port ${PORT}`);
+});
